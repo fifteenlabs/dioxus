@@ -235,7 +235,7 @@ impl WebviewInstance {
                 asset_handlers,
                 edits
             ];
-            move |request, responder: RequestAsyncResponder| {
+            move |_webview_id, request, responder: RequestAsyncResponder| {
                 protocol::desktop_handler(
                     request,
                     asset_handlers.clone(),
@@ -303,7 +303,7 @@ impl WebviewInstance {
             }
         };
 
-        let mut webview = WebViewBuilder::new();
+        let mut webview = WebViewBuilder::new_with_web_context(&mut web_context);
 
         // Disable the webview default shortcuts to disable the reload shortcut
         #[cfg(target_os = "windows")]
@@ -335,8 +335,7 @@ impl WebviewInstance {
                     false
                 }
             }) // prevent all navigations
-            .with_asynchronous_custom_protocol(String::from("dioxus"), request_handler)
-            .with_web_context(&mut web_context);
+            .with_asynchronous_custom_protocol(String::from("dioxus"), request_handler);
 
         // Configure background throttling policy if specified
         if let Some(policy) = cfg.background_throttling {
@@ -352,11 +351,15 @@ impl WebviewInstance {
         }
 
         for (name, handler) in cfg.protocols.drain(..) {
-            webview = webview.with_custom_protocol(name, handler);
+            webview = webview.with_custom_protocol(name, move |_webview_id, request| {
+                handler(request)
+            });
         }
 
         for (name, handler) in cfg.asynchronous_protocols.drain(..) {
-            webview = webview.with_asynchronous_custom_protocol(name, handler);
+            webview = webview.with_asynchronous_custom_protocol(name, move |_webview_id, request, responder| {
+                handler(request, responder)
+            });
         }
 
         const INITIALIZATION_SCRIPT: &str = r#"
