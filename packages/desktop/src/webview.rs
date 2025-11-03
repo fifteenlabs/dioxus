@@ -361,6 +361,11 @@ impl WebviewInstance {
             .with_asynchronous_custom_protocol(String::from("dioxus"), request_handler)
             .with_web_context(&mut web_context);
 
+        // Configure background throttling policy if specified
+        if let Some(policy) = cfg.background_throttling {
+            webview = webview.with_background_throttling(policy);
+        }
+
         if !cfg.disable_file_drop_handler {
             webview = webview.with_drag_drop_handler(file_drop_handler);
         }
