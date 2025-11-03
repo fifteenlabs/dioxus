@@ -365,6 +365,11 @@ impl WebviewInstance {
             }) // prevent all navigations
             .with_asynchronous_custom_protocol(String::from("dioxus"), request_handler);
 
+        // Configure background throttling policy if specified
+        if let Some(policy) = cfg.background_throttling {
+            webview = webview.with_background_throttling(policy);
+        }
+
         // Enable https scheme on android, needed for secure context API, like the geolocation API
         #[cfg(target_os = "android")]
         {

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use tao::event_loop::{EventLoop, EventLoopWindowTarget};
 use tao::window::{Icon, WindowBuilder};
 use wry::http::{Request as HttpRequest, Response as HttpResponse};
-use wry::{RequestAsyncResponder, WebViewId};
+use wry::{BackgroundThrottlingPolicy, RequestAsyncResponder, WebViewId};
 
 use crate::ipc::UserWindowEvent;
 use crate::menubar::{default_menu_bar, DioxusMenu};
@@ -64,6 +64,7 @@ pub struct Config {
     pub(crate) window_close_behavior: WindowCloseBehaviour,
     pub(crate) custom_event_handler: Option<CustomEventHandler>,
     pub(crate) disable_file_drop_handler: bool,
+    pub(crate) background_throttling: Option<BackgroundThrottlingPolicy>,
 }
 
 impl LaunchConfig for Config {}
@@ -111,6 +112,7 @@ impl Config {
             window_close_behavior: WindowCloseBehaviour::WindowCloses,
             custom_event_handler: None,
             disable_file_drop_handler: false,
+            background_throttling: None,
         }
     }
 
@@ -278,6 +280,19 @@ impl Config {
     /// Accepts a color in RGBA format
     pub fn with_background_color(mut self, color: (u8, u8, u8, u8)) -> Self {
         self.background_color = Some(color);
+        self
+    }
+
+    /// Sets the background throttling policy for the WebView.
+    /// This controls how the browser throttles tasks when the app is in the background.
+    ///
+    /// Available on macOS 14.0+, iOS 17.0+. Has no effect on other platforms.
+    ///
+    /// - `BackgroundThrottlingPolicy::Disabled`: No throttling when backgrounded
+    /// - `BackgroundThrottlingPolicy::Throttle`: Limits processing but doesn't fully suspend
+    /// - `BackgroundThrottlingPolicy::Suspend`: Fully suspends tasks (default WebKit behavior)
+    pub fn with_background_throttling(mut self, policy: BackgroundThrottlingPolicy) -> Self {
+        self.background_throttling = Some(policy);
         self
     }
 
