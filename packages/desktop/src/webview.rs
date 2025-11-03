@@ -235,7 +235,7 @@ impl WebviewInstance {
                 asset_handlers,
                 edits
             ];
-            move |_webview_id, request, responder: RequestAsyncResponder| {
+            move |_, request, responder: RequestAsyncResponder| {
                 protocol::desktop_handler(
                     request,
                     asset_handlers.clone(),
@@ -351,13 +351,13 @@ impl WebviewInstance {
         }
 
         for (name, handler) in cfg.protocols.drain(..) {
-            webview = webview.with_custom_protocol(name, move |_webview_id, request| {
+            webview = webview.with_custom_protocol(name, move |_, request| {
                 handler(request)
             });
         }
 
         for (name, handler) in cfg.asynchronous_protocols.drain(..) {
-            webview = webview.with_asynchronous_custom_protocol(name, move |_webview_id, request, responder| {
+            webview = webview.with_asynchronous_custom_protocol(name, move |_, request, responder| {
                 handler(request, responder)
             });
         }
