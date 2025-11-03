@@ -106,7 +106,7 @@ default = ["tokio_runtime", "exception", "transparent", "devtools"]
 tokio_runtime = ["dep:tokio"]
 fullscreen = ["wry/fullscreen"]
 devtools = ["wry/devtools", "dep:dioxus-devtools", "dioxus-signals"]
-exception = ["wry/objc-exception"]
+exception = []  # objc-exception feature removed in wry 0.53+
 transparent = ["wry/transparent"]
 gnu = []
 
