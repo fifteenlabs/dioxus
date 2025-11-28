@@ -128,16 +128,13 @@ impl FileDialogRequest {
                 .flat_map(|f| f.as_extensions().into_iter())
                 .collect();
 
-            // Only add filter if we have valid extensions (skip for "*" or empty)
-            if !file_extensions.is_empty() && !file_extensions.contains(&"*") {
-                let filter_name = file_extensions
-                    .iter()
-                    .map(|extension| format!("*.{extension}"))
-                    .collect::<Vec<_>>()
-                    .join(", ");
+            let filter_name = file_extensions
+                .iter()
+                .map(|extension| format!("*.{extension}"))
+                .collect::<Vec<_>>()
+                .join(", ");
 
-                dialog = dialog.add_filter(filter_name, file_extensions.as_slice());
-            }
+            dialog = dialog.add_filter(filter_name, file_extensions.as_slice());
 
             let files: Vec<_> = if self.multiple {
                 dialog
@@ -183,16 +180,13 @@ impl FileDialogRequest {
             .flat_map(|f| f.as_extensions().into_iter())
             .collect();
 
-        // Only add filter if we have valid extensions (skip for "*" or empty)
-        if !file_extensions.is_empty() && !file_extensions.contains(&"*") {
-            let filter_name = file_extensions
-                .iter()
-                .map(|extension| format!("*.{extension}"))
-                .collect::<Vec<_>>()
-                .join(", ");
+        let filter_name = file_extensions
+            .iter()
+            .map(|extension| format!("*.{extension}"))
+            .collect::<Vec<_>>()
+            .join(", ");
 
-            dialog = dialog.add_filter(filter_name, file_extensions.as_slice());
-        }
+        dialog = dialog.add_filter(filter_name, file_extensions.as_slice());
 
         let files: Vec<_> = if self.multiple {
             dialog.pick_files().into_iter().flatten().collect()
