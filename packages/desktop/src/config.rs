@@ -7,7 +7,7 @@ use tao::{
     window::Window,
 };
 use wry::http::{Request as HttpRequest, Response as HttpResponse};
-use wry::{RequestAsyncResponder, WebViewId};
+use wry::{BackgroundThrottlingPolicy, RequestAsyncResponder, WebViewId};
 
 use crate::ipc::UserWindowEvent;
 use crate::menubar::{default_menu_bar, DioxusMenu};
@@ -70,6 +70,7 @@ pub struct Config {
 
     #[allow(clippy::type_complexity)]
     pub(crate) on_window: Option<Box<dyn FnMut(Arc<Window>, &mut VirtualDom) + 'static>>,
+    pub(crate) background_throttling: Option<BackgroundThrottlingPolicy>,
 }
 
 impl LaunchConfig for Config {}
@@ -118,6 +119,7 @@ impl Config {
             custom_event_handler: None,
             disable_file_drop_handler: false,
             on_window: None,
+            background_throttling: None,
         }
     }
 
@@ -285,6 +287,13 @@ impl Config {
     /// Accepts a color in RGBA format
     pub fn with_background_color(mut self, color: (u8, u8, u8, u8)) -> Self {
         self.background_color = Some(color);
+        self
+    }
+
+    /// Sets the background throttling policy of the WebView.
+    /// This controls whether the webview throttles rendering when the window is in the background.
+    pub fn with_background_throttling(mut self, policy: BackgroundThrottlingPolicy) -> Self {
+        self.background_throttling = Some(policy);
         self
     }
 
