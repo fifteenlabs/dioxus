@@ -7,8 +7,7 @@ use crate::{
     shortcut::ShortcutRegistry,
     webview::{PendingWebview, WebviewInstance},
 };
-use dioxus_core::{consume_context, ScopeId, VirtualDom};
-use dioxus_history::History;
+use dioxus_core::{consume_context, VirtualDom};
 use std::{
     cell::{Cell, RefCell},
     collections::HashMap,
@@ -582,13 +581,6 @@ impl App {
                         window.set_inner_size(tao::dpi::PhysicalSize::new(size.0, size.1));
                     }
                 }
-
-                // Set the url if it exists
-                webview.dom.in_scope(ScopeId::ROOT, || {
-                    if let Some(url) = state.url {
-                        consume_context::<Rc<dyn History>>().replace(url);
-                    }
-                })
             }
         }
     }
